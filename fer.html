@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorpresa 💌</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to top right, #fff0f5, #ffe4e1, #e0ffff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      position: relative;
+      flex-direction: column;
+    }
+
+    #iniciar {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 10;
+      margin-bottom: 20px;
+    }
+
+    .sobre {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      background: #f8b6c1;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transform: scale(0);
+      animation: aparecer 1s forwards;
+      margin-top: 20px;
+      display: none;
+    }
+
+    @keyframes aparecer {
+      to { transform: scale(1); }
+    }
+
+    .tapa {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 100px solid #f4799c;
+      top: -100px;
+      left: 0;
+      animation: abrirTapa 1.5s ease forwards;
+    }
+
+    @keyframes abrirTapa {
+      0% { transform: rotate(0); }
+      100% { transform: rotateX(180deg) translateY(100px); opacity: 0; }
+    }
+
+    .carta {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      animation: abrirCarta 1s ease forwards;
+      z-index: 2;
+      overflow-y: auto;
+    }
+
+    @keyframes abrirCarta {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .carta h2 {
+      color: #ff4d6d;
+      margin-bottom: 10px;
+    }
+
+    .carta p {
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .efectos {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .flor, .corazon, .tequiero {
+      position: absolute;
+      font-size: 24px;
+      animation: caer 8s linear infinite;
+      opacity: 0.9;
+    }
+
+    .corazon { color: red; }
+    .tequiero { color: #e91e63; font-weight: bold; }
+
+    @keyframes caer {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 1; }
+    }
+
+    #mostrarEfectos, #jugar {
+      padding: 10px 20px;
+      background: #f06292;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      margin-top: 10px;
+    }
+
+    #mostrarEfectos:hover, #jugar:hover {
+      transform: scale(1.05);
+    }
+
+    #gameArea {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #gameArea button {
+      padding: 10px 20px;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    #gameOver {
+      display: none;
+      font-size: 24px;
+      color: red;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    /* Red para atrapar los corazones */
+    #red {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      width: 150px;
+      height: 20px;
+      background-color: #ff69b4;
+      border-radius: 10px;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+
+  <button id="iniciar">Haz clic para comenzar 💌</button>
+
+  <div class="sobre" id="sobre">
+    <div class="tapa"></div>
+    <div class="carta" id="carta">
+      <h2>¡Hola, mi hermosa amika.🌟</h2>
+      <p>Te dije que si podia, soy bien vrgs pa este rollo solo te quiero decir..... gracias, gracias por apoyarme
+        por decirme cosas lindas, por ser una amiga maravillosa, te quiero mucho y esta es mi pruba de el cari;o que te tengo.
+        Gracias por todo y perdon por tan poco. 
+      </p>
+      <button id="mostrarEfectos">Presióname</button>
+      <button id="jugar">Juega conmigo</button>
+    </div>
+  </div>
+
+  <div class="efectos" id="efectos"></div>
+
+  <div id="gameArea">
+    <p>¡Atrapa los corazones! Si tocan la parte inferior, pierdes.</p>
+    <div id="red"></div>
+  </div>
+
+  <div id="gameOver">¡Game Over! Los corazones han tocado el fondo.</div>
+
+  <script>
+    const btnIniciar = document.getElementById("iniciar");
+    const sobre = document.getElementById("sobre");
+    const carta = document.getElementById("carta");
+    const btnMostrarEfectos = document.getElementById("mostrarEfectos");
+    const btnJugar = document.getElementById("jugar");
+    const efectos = document.getElementById("efectos");
+    const gameArea = document.getElementById("gameArea");
+    const gameOver = document.getElementById("gameOver");
+    const red = document.getElementById("red");
+
+    let gameInterval;
+    let gameActive = false;
+
+    let redPosX = window.innerWidth / 2 - 75; // Posición inicial de la red
+
+    // Detectar movimiento de la red con el mouse o en dispositivos táctiles
+    window.addEventListener("mousemove", (e) => {
+      redPosX = e.clientX - red.offsetWidth / 2; // Mover la red según el mouse
+      red.style.left = redPosX + "px";
+    });
+
+    // Para dispositivos táctiles
+    window.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+      redPosX = touch.clientX - red.offsetWidth / 2;
+      red.style.left = redPosX + "px";
+    });
+
+    btnIniciar.addEventListener("click", () => {
+      btnIniciar.style.display = "none";
+      sobre.style.display = "block";
+      
+      setTimeout(() => {
+        carta.style.display = "block";
+      }, 1500);
+    });
+
+    btnMostrarEfectos.addEventListener("click", () => {
+      setInterval(crearElemento, 300);
+    });
+
+    btnJugar.addEventListener("click", () => {
+      gameArea.style.display = "block";
+      carta.style.display = "none";
+      gameActive = true;
+      gameOver.style.display = "none";
+
+      startGame();
+    });
+
+    function startGame() {
+      gameInterval = setInterval(crearCorazon, 1000); // Crear un corazón cada segundo
+    }
+
+    function crearCorazon() {
+      const corazon = document.createElement("div");
+      corazon.classList.add("corazon");
+      corazon.textContent = "❤️";
+      corazon.style.left = Math.random() * window.innerWidth + "px";
+      corazon.style.animationDuration = (Math.random() * 4 + 4) + "s"; // Corazones caen más lentamente
+      efectos.appendChild(corazon);
+
+      // Verificar si el corazón toca la parte inferior
+      corazon.addEventListener("animationend", () => {
+        if (parseFloat(corazon.style.top) + corazon.offsetHeight >= window.innerHeight) {
+          gameOver.style.display = "block";
+          clearInterval(gameInterval);
+        } else {
+          corazon.remove();
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
